@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.gmall.manage.mapper.BaseAttrInfo_Mapper">
+
+    <resultMap id="map_attr_attrValue" type="com.atguigu.gmall.bean.BaseAttrInfo" autoMapping="true">
+        <id property="id" column="id"></id>
+        <!-- 一对多：一个平台属性对应多个平台属性值 -->
+        <collection property="attrValueList" ofType="com.atguigu.gmall.bean.BaseAttrValue" autoMapping="true">
+            <id property="id" column="attr_value_Id"></id>
+        </collection>
+    </resultMap>
+
+    <select id="getBaseAttrInfoList_ByCatalog3Id" parameterType="String" resultMap="map_attr_attrValue">
+            SELECT
+                attr.id, attr.attr_name, attr.catalog3_id,
+                attrValue.id attr_value_Id,attrValue.value_name, attrValue.attr_id
+            FROM base_attr_info attr INNER JOIN base_attr_value attrValue
+            ON attr.id = attrValue.attr_id
+            WHERE attr.catalog3_id = #{catalog3Id};
+    </select>
+
+    <!--
+    #{}：表示一个占位符，一个参数
+    ${}：表示多个占位符，多个参数，不安全
+    -->
+    <select id="getBaseAttrInfoList" parameterType="String" resultMap="map_attr_attrValue">
+            SELECT
+                ai.id, ai.attr_name, ai.catalog3_id,
+                av.id attr_value_Id, av.value_name,av.attr_id
+            FROM base_attr_info ai INNER JOIN base_attr_value av ON ai.id=av.attr_id
+            WHERE av.id IN (${attrValueIds});
+    </select>
+</mapper>

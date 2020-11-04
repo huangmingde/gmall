@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- <mapper>的namespace：表示接口的全路径 -->
+<mapper namespace="com.atguigu.gmall.manage.mapper.SpuSaleAttr_Mapper">
+    <!--
+        <resultMap>：查询结果集
+            id：唯一标识
+            type：主表对应的实体类全类名
+            autoMapping="true"：表示开启自动映射，就不用写了<result>了
+                <id>：主键字段
+                    property：主表实体类的属性名
+                    column：结果集-主表主键字段名
+                <result>:普通字段,不用写了
+                【一对多】
+                <collection>
+                    property：主表实体类的属性名
+                    ofType：从表集合泛型全类名
+                    autoMapping="true"
+                        <id>：映射从表主键
+                【多对一】
+                <association>
+                    property：主表实体类的属性名
+                    javaType：从表实体类的全类名
+    -->
+    <resultMap id="spuSaleAttr" type="com.atguigu.gmall.bean.SpuSaleAttr" autoMapping="true">
+        <id property="id" column="id"></id>
+        <!-- 一对多 -->
+        <collection property="spuSaleAttrValueList" ofType="com.atguigu.gmall.bean.SpuSaleAttrValue" autoMapping="true">
+            <id property="id" column="sale_attr_value_id"></id>
+        </collection>
+    </resultMap>
+    <select id="getSpuSaleAttrList" parameterType="String" resultMap="spuSaleAttr">
+            SELECT
+                sa.id,sa.spu_id,sa.sale_attr_id,sa.sale_attr_name,
+                sav.id sale_attr_value_id,sav.sale_attr_value_name
+            from spu_sale_attr sa INNER JOIN spu_sale_attr_value sav
+            on sa.spu_id = sav.spu_id AND sa.sale_attr_id = sav.sale_attr_id
+            WHERE sa.spu_id = #{spuId};
+    </select>
+
+    <select id="getSpuSaleAttrList_Value_checked" parameterType="String" resultMap="spuSaleAttr">
+            SELECT
+                sa.id,sa.spu_id,sa.sale_attr_id,sa.sale_attr_name,
+                sav.id sale_attr_value_id,sav.sale_attr_value_name,
+                skuSav.sku_id,IF(skuSav.sku_id IS NULL,0,1) is_checked
+            FROM spu_sale_attr sa INNER JOIN spu_sale_attr_value sav ON sa.spu_id = sav.spu_id AND sa.sale_attr_id = sav.sale_attr_id
+            LEFT JOIN sku_sale_attr_value skuSav ON sa.sale_attr_id = skuSav.sale_attr_id AND sav.id = skuSav.sale_attr_value_id AND skuSav.sku_id = #{skuId}
+            WHERE sa.spu_id = #{spuId};
+    </select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.atguigu.gmall.manage.mapper.SkuSaleAttrValue_Mapper">
+    <resultMap id="skuSaleAttrValue_map" type="com.atguigu.gmall.bean.SkuSaleAttrValue" autoMapping="true">
+        <!-- 映射主表主键 -->
+        <id property="id" column="id"></id>
+    </resultMap>
+    <!-- 根据spuId，获取skuSaleAttrValue集合 -->
+    <select id="getskuSaleAttrValueList_BySpuId" parameterType="String" resultMap="skuSaleAttrValue_map">
+            SELECT
+                sav.sku_id,
+                sav.sale_attr_value_id,
+                sav.sale_attr_value_name
+            FROM sku_sale_attr_value sav INNER JOIN sku_info si
+            ON sav.sku_id = si.id
+            WHERE si.spu_id = #{spuId};
+    </select>
+</mapper>
+
